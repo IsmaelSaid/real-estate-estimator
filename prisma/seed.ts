@@ -2,14 +2,14 @@ import {User} from "@prisma/client";
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient()
-import {POST} from '../src/app/api/register/route'
+import {POST} from '../src/app/api/signup/route'
 
 async function main() {
     await prisma.user.deleteMany();
     const newUser : User = {
         email: 'johndoe@mail.com',
-            name: 'John',
-            nickname: 'Doe',
+            firstname: 'John',
+            lastname: 'Doe',
             password: 'securepassword123',
             username: 'Johny'
     }

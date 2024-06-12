@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  email    String @id @map("_id")
-  name     String
-  nickname String
-  username String
-  password String
+  email     String @id @map("_id")
+  firstname String
+  lastname  String
+  username  String @unique
+  password  String
 }

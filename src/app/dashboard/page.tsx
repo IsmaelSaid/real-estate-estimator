@@ -1,10 +1,10 @@
-'use client'
 import AppBarComponent from "@/app/components/AppBarComponent";
 
-export default function Home() {
+export default function Dashboard() {
     return (
-        <main className="h-full">
+        <div>
             <AppBarComponent/>
-        </main>
+            <h1>Dashboard placeholder</h1>
+        </div>
     );
 }

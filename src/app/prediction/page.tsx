@@ -1,10 +1,10 @@
-'use client'
 import AppBarComponent from "@/app/components/AppBarComponent";
 
-export default function Home() {
+export default function Prediction() {
     return (
-        <main className="h-full">
+        <div>
             <AppBarComponent/>
-        </main>
+            <h1>Prediction placeholder</h1>
+        </div>
     );
 }

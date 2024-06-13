@@ -1,10 +1,10 @@
-'use client'
 import AppBarComponent from "@/app/components/AppBarComponent";
 
-export default function Home() {
+export default function Contest(){
     return (
-        <main className="h-full">
+        <div>
             <AppBarComponent/>
-        </main>
+            <h1>Contest placholder</h1>
+        </div>
     );
 }

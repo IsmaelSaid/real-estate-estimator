@@ -25,6 +25,11 @@ jobs:
     - name: Archive build files
       run: |
         mkdir build
+        
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}" >> .env
+        echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> .env
+        cp .env build/
         cp -r .next build/
         cp package.json build/
         cp package-lock.json build/
@@ -58,6 +63,7 @@ jobs:
 
     - name: Copy build files to server
       run: |
+      
         scp -o StrictHostKeyChecking=no build.tar.gz root@194.164.72.59:/tmp/
         ssh -o StrictHostKeyChecking=no root@194.164.72.59 << 'EOF'
         
@@ -80,3 +86,6 @@ jobs:
         EOF
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}

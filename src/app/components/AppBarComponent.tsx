@@ -7,7 +7,7 @@ import {signOut, useSession} from "next-auth/react";
 export default function AppBarComponent() {
     const {data: session} = useSession()
     return (
-        <nav className={'bg-blue-500 flex justify-between items-center h-auto py-5 px-5'}>
+        <nav className={'fixed w-full z-50 top-0 left-0 bg-blue-500 flex justify-between items-center h-auto py-5 px-5'}>
             <div className={'text-white'}>
                 <Link className={''} href="/">HOME</Link>
                 {session && <>

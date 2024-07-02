@@ -1,3 +1,4 @@
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,7 +17,8 @@ model User {
 }
 
 model Mutation {
-  id_mutation               String   @id @map("_id")
+  new_id_mutation           String   @id @map("_id")
+  id_mutation               String
   date_mutation             DateTime
   nature_mutation           String
   valeur_fonciere           Float

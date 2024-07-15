@@ -66,3 +66,27 @@ export const countPropertyTypesByYear = (mutations: Mutation[]) => {
 export const isHouse = (mutation: Mutation) => mutation.type_local === 'Maison';
 export const isAppartement = (mutation: Mutation) => mutation.type_local === 'Appartement';
 export const isVente = (mutation: Mutation) => mutation.nature_mutation === 'Vente';
+
+export const extractTrainingData = (mutation: Mutation[],
+                                    typeLocal: 'Appartement' | 'Maison',
+                                    minSurface: number = 0,
+                                    maxSurface: number = Number.MAX_VALUE,
+                                    minValeurFonciere: number = 0,
+                                    maxValeurFonciere: number = Number.MAX_VALUE,
+) => {
+    const filterMutations = (mutation: Mutation) => {
+        return mutation.type_local === typeLocal &&
+            mutation.surface_reelle_bati > minSurface &&
+            mutation.surface_reelle_bati < maxSurface &&
+            mutation.valeur_fonciere > minValeurFonciere &&
+            mutation.valeur_fonciere < maxValeurFonciere;
+    };
+    return _.chain(mutation).uniqBy('id_mutation').filter((mutation: Mutation) => filterMutations(mutation) && isVente(mutation)).sortBy('valeur_fonciere').value()
+
+}
+
+
+function toRadians(degrees : number) {
+    return degrees * Math.PI / 180;
+}
+

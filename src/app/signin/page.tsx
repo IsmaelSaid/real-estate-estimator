@@ -1,5 +1,4 @@
-import LoginComponent from "@/app/components/LoginComponent";
-
+import LoginComponent from "@/app/components/authentification/LoginComponent";
 export default function Signing(){
     return <LoginComponent/>
 }

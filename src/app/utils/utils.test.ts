@@ -1,9 +1,10 @@
 import {Mutation} from "@prisma/client";
 import {
+    buildOppdnDataSoftUrl,
     calculateSquareMeterValue,
     calculateSquareMeterValueByYear,
     countPropertyTypesByCity,
-    countPropertyTypesByYear
+    countPropertyTypesByYear, SeparateNumbersFromStrings
 } from "@/app/utils/utils";
 
 
@@ -115,3 +116,73 @@ describe('countPropertyTypesByYear', () => {
         ]);
     });
 });
+
+describe('PrepareUserInput function should works if',()=>{
+
+    test('Valid strings and numbers',()=>{
+        const testUserInput = "14 rue georges marchais 97441 Sainte Suzanne"
+        const expectedPreparedUserInput = {
+            numbers: [14, 97441],
+            strings: ['RUE', 'GEORGES', 'MARCHAIS', 'SAINTE', 'SUZANNE']
+        }
+
+        expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
+    })
+    test('No valid strings',()=>{
+        const testUserInput = "14 97441"
+        const expectedPreparedUserInput = {
+            numbers: [14, 97441],
+            strings: []
+        }
+
+        expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
+    })
+
+    test('No numbers',()=>{
+        const testUserInput = "rue georges marchais sainte-suzanne"
+        const expectedPreparedUserInput = {
+            numbers: [],
+            strings: ['RUE', 'GEORGES', 'MARCHAIS', 'SAINTE', 'SUZANNE']
+        }
+
+        expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
+    })
+
+    test('Empty string',()=>{
+        const testUserInput = ""
+        const expectedPreparedUserInput = {
+            numbers: [],
+            strings: []
+        }
+
+        expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
+    })
+
+})
+
+describe('buildOpenDataSoftUrl should works',()=>{
+    test('Search on complete url',()=>{
+        const testUserInput = "14 rue georges marchais 97441 Sainte-Suzanne"
+        const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=search(*,\'RUE GEORGES MARCHAIS SAINTE SUZANNE\') and numero in (14,97441)&limit=20'
+        expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
+    })
+
+    test('Search on strings only',()=>{
+        const testUserInput = "rue georges marchais Sainte-Suzanne"
+        const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=search(*,\'RUE GEORGES MARCHAIS SAINTE SUZANNE\')&limit=20'
+        expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
+    })
+
+    test('Search on numbers only',()=>{
+        const testUserInput = "14 97441"
+        const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=numero in (14,97441)&limit=20'
+        expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
+    })
+
+    test('Search on empty user input',()=>{
+        const testUserInput = ""
+        const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?limit=20'
+        expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
+    })
+
+})

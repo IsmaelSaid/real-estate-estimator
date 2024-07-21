@@ -34,12 +34,12 @@ export const calculateSquareMeterValueByYear = (mutations: Mutation[]) => {
  * @param {Mutation[]} mutations - The mutations array.
  * @returns {Object[]} An array of objects, each containing the city and the count of types of local for that city.
  */
-export const countPropertyTypesByCity = (mutations : Mutation[]) => {
+export const countPropertyTypesByCity = (mutations: Mutation[]) => {
     return _.chain(mutations)
         .groupBy((mutation) => `${mutation.code_commune} ${mutation.nom_commune}`)
         .map((value, city) => {
             const count = _.countBy(value, 'type_local');
-            return { city: city, count: count };
+            return {city: city, count: count};
         })
         .orderBy(
             (mutation) => (mutation.count.Maison || 0) + (mutation.count.Appartement || 0),
@@ -86,7 +86,67 @@ export const extractTrainingData = (mutation: Mutation[],
 }
 
 
-function toRadians(degrees : number) {
+function toRadians(degrees: number) {
     return degrees * Math.PI / 180;
 }
 
+
+const fetchAddresses = async (search: string) => {
+    const splitted = _.chain(search).split(' ').value()
+    let preparedInput: { strings: string[], numbers: number[] } = {strings: [], numbers: []}
+    _.chain(splitted).forEach((value) => {
+        const convertedNumber = _.isNumber(Number(value))
+        if (_.isNumber(convertedNumber)) {
+            preparedInput.numbers.push(convertedNumber)
+        } else {
+            preparedInput.strings.push(_.toUpper(value))
+        }
+    }).value()
+
+    const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=search(*,\'RUE MARCEL PAGNOL SAINNTE MARIE\') and numero in (3)&limit=20'
+
+}
+
+/**
+ * This function separates numbers from strings to easily use search API from ODS
+ * @param search
+ */
+export const SeparateNumbersFromStrings = (search: string): { strings: string[], numbers: number[] } => {
+    let preparedInput: { strings: string[], numbers: number[] } = _.chain(search).toUpper().split(/[\s-]+/).reduce((acc, current) => {
+        if(current === "") {
+            return acc
+        }
+        const numb: number = Number(current)
+        let nextAcc = _.clone(acc)
+        if (!isNaN(numb)) {
+            nextAcc.numbers.push(numb);
+
+        } else {
+            nextAcc.strings.push(current);
+        }
+        return nextAcc
+    }, {strings: [] as string[], numbers: [] as number[]}).value()
+    return preparedInput
+}
+
+/**
+ * This function builds a parametrized url for ODS request
+ * @param search
+ */
+export const buildOppdnDataSoftUrl = (search : string) : string =>{
+    const separatedStringsFromNumbers = SeparateNumbersFromStrings(search)
+    let whereParameters = ''
+    const {strings, numbers} = separatedStringsFromNumbers
+    const isNotEmptyStrings = !_.isEmpty(strings)
+    const isNotEmptyNumbers = !_.isEmpty(numbers)
+    if (isNotEmptyStrings && isNotEmptyNumbers) {
+        whereParameters = `?where=search(*,'${strings.join(' ')}') and numero in (${numbers.join(',')})&limit=20`
+    } else if (isNotEmptyStrings){
+        whereParameters = `?where=search(*,'${strings.join(' ')}')&limit=20`
+    } else if(isNotEmptyNumbers){
+        whereParameters = `?where=numero in (${numbers.join(',')})&limit=20`
+    }else{
+        whereParameters = '?limit=20'
+    }
+    return `https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records${whereParameters}`
+}

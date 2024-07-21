@@ -4,6 +4,11 @@ import {useState} from "react";
 import {Button, Dropdown} from "semantic-ui-react";
 import _ from "lodash";
 import {Mutation} from "@prisma/client";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBuilding} from '@fortawesome/free-solid-svg-icons'
+import {faHouse} from "@fortawesome/free-solid-svg-icons/faHouse";
+
+
 /**
  * The main component for the Prediction page.
  */
@@ -108,38 +113,76 @@ export default function Prediction() {
         latitude: 0
     } as Omit<Mutation, 'new_id_mutation'>)
 
+    const [typeLocal, setTypeLocal] = useState(undefined as 'Appartement' | 'Maison' | undefined)
+
     return (
         <div className={'h-full'}>
             <AppBarComponent/>
             <div className={'w-full h-full pt-16 mx-auto border-b-blue-700 flex justify-center'}>
                 <div className={'w-100 p-10'}>
-                    <h1>What is the address of the property to be valued?</h1>
-                    <form className={''}>
-                        {/* This semantic dropdown may be considred as HTMLInputElement, with a value props
-                    in order for the dropdown to display the selected value, we must use primitive types like string, number etc...
-                    we can't use object as value, so we must convert the object to a string using JSON.stringify() and then parse it back to object using JSON.parse()
-                    */}
-                        <Dropdown icon='search'
-                                  loading={false}
-                                  style={{height: '40px'}}
-                            placeholder='Write an adress...'
-                                  search
-                                  selection
-                                  className={'w-full'}
-                                  closeOnChange
-                                  value={selectedAddress}
-                                  options={addressesSearchOptions} onChange={(e, {value}) => {
-                            console.info(value)
-                            setSelectedAddress(value)
-                        }} onSearchChange={(e) => {
-                            fetchAddresses((e.target as HTMLInputElement).value)
-                        }}/>
+                    {steps === 0 && <div className={'h-60'}>
+                        <h1>What is the address of the property to be valued?</h1>
+                        <form className={''}>
+                            {/* This semantic dropdown may be considred as HTMLInputElement, with a value props
+                            in order for the dropdown to display the selected value, we must use primitive types like string, number etc...
+                            we can't use object as value, so we must convert the object to a string using JSON.stringify() and then parse it back to object using JSON.parse()
+                            */}
+                            <Dropdown icon='search'
+                                      loading={false}
+                                      style={{height: '40px'}}
+                                      placeholder='Write an adress...'
+                                      search
+                                      selection
+                                      className={'w-full'}
+                                      closeOnChange
+                                      value={selectedAddress}
+                                      options={addressesSearchOptions} onChange={(e, {value}) => {
+                                console.info(value)
+                                setSelectedAddress(value)
+                            }} onSearchChange={(e) => {
+                                fetchAddresses((e.target as HTMLInputElement).value)
+                            }}/>
 
-                    </form>
-                    <div className={'flex justify-center pt-10'}>
-                        <Button onClick={() => setSteps((prev) => prev++)}
-                                disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Next</Button>
-                    </div>
+                        </form>
+                        <div className={'flex justify-center pt-10'}>
+                            <Button onClick={() => setSteps((prev) => prev + 1)}
+                                    disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Next</Button>
+                        </div>
+                    </div>}
+
+
+                    {steps === 1 && <div className={'h-60'}>
+                        <h1>What type of accommodation is it?</h1>
+                        <div className={'flex justify-center mx-2'}>
+                            <div onClick={() => setTypeLocal('Maison')}
+                                 className={`flex flex-col items-center border-2 rounded w-80 p-10 hover:bg-gray-100 ${typeLocal === 'Maison' && 'border-2 border-blue-700 hover:bg-transparent'}`}>
+                                <FontAwesomeIcon icon={faHouse} size={'4x'} fixedWidth color={'darkgray'}
+                                                 className={`p-10 ${typeLocal === 'Maison' && 'text-blue-700'}`}/>
+                                <div className={'flex justify-center'}>
+                                    <p className={`text-gray-500 ${typeLocal === 'Maison' && 'text-blue-700'}`}>House</p>
+                                </div>
+                            </div>
+                            <div className={'flex justify-center mx-2'}>
+                                <div onClick={() => setTypeLocal('Appartement')}
+                                     className={`flex flex-col items-center border-2 rounded w-80 p-10 hover:bg-gray-100 ${typeLocal === 'Appartement' && 'border-2 border-blue-700 hover:bg-transparent'}`}>
+                                    <FontAwesomeIcon icon={faBuilding} size={'4x'} fixedWidth color={'darkgray'}
+                                                     className={`p-10 ${typeLocal === 'Appartement' && 'text-blue-700'}`}
+                                    />
+                                    <div className={'flex justify-center'}>
+                                        <p className={`text-gray-500 ${typeLocal === 'Appartement' && 'text-blue-700'}`}>Appartement</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={'flex justify-center pt-10'}>
+                            <Button onClick={() => setSteps((prev) => prev - 1)}
+                                    disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
+                            <Button onClick={() => setSteps((prev) => prev + 1)}
+                                    disabled={_.isUndefined(typeLocal)}>Next</Button>
+                        </div>
+                    </div>}
                 </div>
             </div>
         </div>

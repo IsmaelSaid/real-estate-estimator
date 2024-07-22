@@ -1,12 +1,18 @@
 'use client'
 import AppBarComponent from "@/app/components/AppBarComponent";
 import {useState} from "react";
-import {Button, Dropdown} from "semantic-ui-react";
+import {Button, Dropdown, Form, FormField, Input, Label, Radio} from "semantic-ui-react";
 import _ from "lodash";
 import {Mutation} from "@prisma/client";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBuilding} from '@fortawesome/free-solid-svg-icons'
 import {faHouse} from "@fortawesome/free-solid-svg-icons/faHouse";
+import {
+    CityRegressorInput,
+    KMeansRegressorInput,
+    KNNRegressorInput,
+    RadiusRegressorInput
+} from "@/app/components/inputs/Input";
 
 
 /**
@@ -88,7 +94,7 @@ export default function Prediction() {
     /**
      *
      */
-    const [steps, setSteps] = useState(0)
+    const [steps, setSteps] = useState(3)
 
     /**
      * State for storing the mutation data.
@@ -114,6 +120,19 @@ export default function Prediction() {
     } as Omit<Mutation, 'new_id_mutation'>)
 
     const [typeLocal, setTypeLocal] = useState(undefined as 'Appartement' | 'Maison' | undefined)
+    const [surface, setSurface] = useState(undefined as number | undefined)
+
+    const [model, setModel] = useState({
+        modelName: 'CityRegressor',
+        parameters: {},
+        ready: true
+    })
+    const modelTemplate = {
+        'CityRegressor': <CityRegressorInput/>,
+        'RadiusRegressor': <RadiusRegressorInput onParametersChanges={(model) => setModel(model)}/>,
+        'KNNRegressor': <KNNRegressorInput onParametersChanges={(model) => setModel(model)}/>,
+        'KMeansRegressor': <KMeansRegressorInput onParametersChanges={(model) => setModel(model)}/>
+    }
 
     return (
         <div className={'h-full'}>
@@ -145,12 +164,10 @@ export default function Prediction() {
 
                         </form>
                         <div className={'flex justify-center pt-10'}>
-                            <Button onClick={() => setSteps((prev) => prev + 1)}
+                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
                                     disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Next</Button>
                         </div>
                     </div>}
-
-
                     {steps === 1 && <div className={'h-60'}>
                         <h1>What type of accommodation is it?</h1>
                         <div className={'flex justify-center mx-2'}>
@@ -177,13 +194,116 @@ export default function Prediction() {
                         </div>
 
                         <div className={'flex justify-center pt-10'}>
-                            <Button onClick={() => setSteps((prev) => prev - 1)}
+                            <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
                                     disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
-                            <Button onClick={() => setSteps((prev) => prev + 1)}
+                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
                                     disabled={_.isUndefined(typeLocal)}>Next</Button>
                         </div>
                     </div>}
+                    {steps === 2 && <div className={'h-60'}>
+                        <h1>How much living space does your property have?</h1>
+                        <div className={'flex justify-center mx-2'}>
+                            <Input labelPosition='right' type='number' placeholder='Surface' className={'w-96'}>
+                                <input value={surface}
+                                       onChange={(e) => setSurface(e.target.value == '' ? undefined : Number(e.target.value))}/>
+                                <Label>m<sup>2</sup></Label>
+                            </Input>
+                        </div>
+
+                        <div className={'flex justify-center pt-10'}>
+                            <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
+                                    disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
+                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
+                                    disabled={_.isUndefined(surface)}>Predict</Button>
+                        </div>
+                    </div>}
+
+                    {steps === 3 && <div className={'h-60'}>
+                        <h1>Choose your model</h1>
+                        <div className={'flex justify-center mx-2'}>
+                            <Form className={'flex flex-row'}>
+                                <FormField>
+                                    <Radio
+                                        className={'pr-3'}
+                                        label='City Regressor'
+                                        name='radioGroup'
+                                        value='CityRegressor'
+                                        checked={model.modelName === 'CityRegressor'}
+                                        onClick={(event, data) => {
+                                            setModel({
+                                                modelName: 'CityRegressor',
+                                                parameters: {},
+                                                ready: true
+                                            })
+                                        }}
+                                    />
+                                </FormField>
+                                <FormField>
+                                    <Radio
+                                        className={'px-3'}
+
+                                        label='Radius Regressor'
+                                        name='radioGroup'
+                                        value='RadiusRegressor'
+                                        checked={model.modelName === 'RadiusRegressor'}
+                                        onClick={(event, data) => {
+                                            setModel({
+                                                modelName: 'RadiusRegressor',
+                                                parameters: {},
+                                                ready: false
+                                            })
+                                        }}
+                                    />
+                                </FormField>
+                                <FormField>
+                                    <Radio
+                                        className={'px-3'}
+
+                                        label='KNN Regressor'
+                                        name='radioGroup'
+                                        value='KNNRegressor'
+                                        checked={model.modelName === 'KNNRegressor'}
+                                        onClick={(event, data) => {
+                                            setModel({
+                                                modelName: 'KNNRegressor',
+                                                parameters: {},
+                                                ready: false
+                                            })
+                                        }}
+                                    />
+                                </FormField>
+                                <FormField>
+                                    <Radio
+                                        className={'px-3'}
+
+                                        label='KMeans Regressor'
+                                        name='radioGroup'
+                                        value='KMeansRegressor'
+                                        checked={model.modelName === 'KMeansRegressor'}
+                                        onClick={(event, data) => {
+                                            setModel({
+                                                modelName: 'KMeansRegressor',
+                                                parameters: {},
+                                                ready: false
+                                            })
+                                        }}
+                                    />
+                                </FormField>
+                            </Form>
+
+                        </div>
+                        <div>
+                            {_.chain(modelTemplate).get(model.modelName).value()}
+
+                        </div>
+                    </div>}
+                    <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
+                            disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
+                    <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
+                            disabled={model.ready == false}>Predict</Button>
+
                 </div>
+
             </div>
         </div>
     );

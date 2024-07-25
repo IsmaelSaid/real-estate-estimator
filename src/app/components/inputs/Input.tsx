@@ -1,27 +1,36 @@
 import {useState} from "react";
 import _ from "lodash";
 import {Input, Label} from "semantic-ui-react";
+import {motion} from 'framer-motion';
 
-export const KMeansRegressorInput = ({ onParametersChanges }: { onParametersChanges: (model: {modelName: string, parameters : {numberOfClusters: number | undefined} , ready : boolean}) => void }) => {
+export const KMeansRegressorInput = ({onParametersChanges}: {
+    onParametersChanges: (model: {
+        modelName: string,
+        parameters: { numberOfClusters: number | undefined },
+        ready: boolean
+    }) => void
+}) => {
     const [k, setK] = useState<number | undefined>(undefined);
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newRadius = e.target.value === '' ? undefined : Number(e.target.value);
-        setK(newRadius);
+        const newK = e.target.value === '' ? undefined : Number(e.target.value);
+        setK(newK);
         onParametersChanges({
             modelName: 'KMeansRegressor',
-            parameters: {numberOfClusters: newRadius},
-            ready: !_.isUndefined(newRadius)
+            parameters: {numberOfClusters: newK},
+            ready: !_.isUndefined(newK)
         });
     };
     return (
-        <div>
-            <h5>Description</h5>
-            <p>Kmeans Regressor description</p>
-            <Input type='number' placeholder='Number of clusters' className={'w-96'}>
+        <motion.div initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.1 }}>
+            {/*            <h5>Description</h5>
+            <p>Kmeans Regressor description</p>*/}
+            <Input type='number' fluid placeholder='Number of clusters'>
                 <input value={k || ''}
                        onChange={handleInputChange}/>
             </Input>
-        </div>
+        </motion.div>
     );
 }
 
@@ -30,7 +39,13 @@ export const KMeansRegressorInput = ({ onParametersChanges }: { onParametersChan
  * @param {Object} props - The props for the component.
  * @param {Function} props.onParametersChanges - The function to be called when the radius state changes.
  */
-export const RadiusRegressorInput = ({ onParametersChanges }: { onParametersChanges: (model: {modelName: string, parameters : {radius: number | undefined} , ready : boolean}) => void }) => {
+export const RadiusRegressorInput = ({onParametersChanges}: {
+    onParametersChanges: (model: {
+        modelName: string,
+        parameters: { radius: number | undefined },
+        ready: boolean
+    }) => void
+}) => {
     const [radius, setRadius] = useState<number | undefined>(undefined);
 
     /**
@@ -51,15 +66,17 @@ export const RadiusRegressorInput = ({ onParametersChanges }: { onParametersChan
 
     // The component returns a div containing a description and an input field for the radius.
     return (
-        <div>
-            <h5>Description</h5>
-            <p>Radius Regressor description</p>
-            <Input labelPosition='right' type='number' placeholder='Area' className={'w-96'}>
+        <motion.div initial={{opacity: 0}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{duration: 0.1}}>
+            {/*            <h5>Description</h5>
+            <p>Radius Regressor description</p>*/}
+            <Input labelPosition='right' fluid type='number' placeholder='Area'>
                 <input value={radius || ''}
                        onChange={handleInputChange}/>
                 <Label>km<sup>2</sup></Label>
             </Input>
-        </div>
+        </motion.div>
     );
 }
 
@@ -68,7 +85,13 @@ export const RadiusRegressorInput = ({ onParametersChanges }: { onParametersChan
  * @param {Object} props - The props for the component.
  * @param {Function} props.onParametersChanges - The function to be called when the radius state changes.
  */
-export const KNNRegressorInput = ({ onParametersChanges }: { onParametersChanges: (model: {modelName: string, parameters : {numberOfNeighbors: number | undefined} , ready : boolean}) => void }) => {
+export const KNNRegressorInput = ({onParametersChanges}: {
+    onParametersChanges: (model: {
+        modelName: string,
+        parameters: { numberOfNeighbors: number | undefined },
+        ready: boolean
+    }) => void
+}) => {
     const [numberOfNeighbors, setNumberOfNeighbors] = useState<number | undefined>(undefined);
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newNumberOfNeighbors = e.target.value === '' ? undefined : Number(e.target.value);
@@ -80,20 +103,22 @@ export const KNNRegressorInput = ({ onParametersChanges }: { onParametersChanges
         });
     };
     return (
-        <div>
-            <h5>Description</h5>
-            <p>KNN regressor description</p>
-            <Input type='number' placeholder='Number of neighbors' className={'w-96'}>
+        <motion.div initial={{opacity: 0}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{duration: 0.1}}>
+            {/*            <h5>Description</h5>
+            <p>KNN regressor description</p>*/}
+            <Input type='number' fluid placeholder='Number of neighbors'>
                 <input value={numberOfNeighbors || ''}
                        onChange={handleInputChange}/>
             </Input>
-        </div>
+        </motion.div>
     );
 }
 
 export const CityRegressorInput = () => {
-    return <div>
-        <h5>Description</h5>
-        <p>City Regressor description</p>
+    return <div style={{height: '38px', paddingBottom: '35px'}}>
+        {/*        <h5>Description</h5>
+        <p>City Regressor description</p>*/}
     </div>
 }

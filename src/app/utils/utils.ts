@@ -68,7 +68,7 @@ export const isAppartement = (mutation: Mutation) => mutation.type_local === 'Ap
 export const isVente = (mutation: Mutation) => mutation.nature_mutation === 'Vente';
 
 export const extractTrainingData = (mutation: Mutation[],
-                                    typeLocal: 'Appartement' | 'Maison',
+                                    typeLocal: string,
                                     minSurface: number = 0,
                                     maxSurface: number = Number.MAX_VALUE,
                                     minValeurFonciere: number = 0,
@@ -140,11 +140,11 @@ export const buildOppdnDataSoftUrl = (search : string) : string =>{
     const isNotEmptyStrings = !_.isEmpty(strings)
     const isNotEmptyNumbers = !_.isEmpty(numbers)
     if (isNotEmptyStrings && isNotEmptyNumbers) {
-        whereParameters = `?where=search(*,'${strings.join(' ')}') and numero in (${numbers.join(',')})&limit=20`
+        whereParameters = `?where=search(*,'${strings.join(' ')}') and numero in (${numbers.join(',')})&limit=100`
     } else if (isNotEmptyStrings){
-        whereParameters = `?where=search(*,'${strings.join(' ')}')&limit=20`
+        whereParameters = `?where=search(*,'${strings.join(' ')}')&limit=100`
     } else if(isNotEmptyNumbers){
-        whereParameters = `?where=numero in (${numbers.join(',')})&limit=20`
+        whereParameters = `?where=numero in (${numbers.join(',')})&limit=100`
     }else{
         whereParameters = '?limit=20'
     }

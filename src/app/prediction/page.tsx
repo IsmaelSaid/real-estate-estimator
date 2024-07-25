@@ -13,12 +13,46 @@ import {
     KNNRegressorInput,
     RadiusRegressorInput
 } from "@/app/components/inputs/Input";
+import {CircularProgress} from "@mui/material";
+import {json} from "node:stream/consumers";
+
+import {motion} from 'framer-motion';
 
 
 /**
  * The main component for the Prediction page.
  */
 export default function Prediction() {
+    const [isLoading, setIsLoading] = useState(false)
+    const [prediction, setPrediction] = useState(0)
+    const [isFetchingAdresses, setIsFetchingAdresses] = useState(false)
+    const makePrediction = (model: {
+        modelName: string,
+        parameters: Object
+    }, target: Omit<Mutation, 'new_id_mutation'>) => {
+        setIsLoading(true)
+        const options = {
+            method: "POST",
+            body: JSON.stringify({target: target, model: model}),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }
+
+        fetch("api/predictions", options)
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error('Problem with the request')
+                }
+            })
+            .then(result => {
+                setIsLoading(false)
+                setPrediction(result.prediction)
+            })
+            .catch(error => console.log('error', error));
+    }
 
     /**
      * Fetches addresses based on the search string.
@@ -39,6 +73,7 @@ export default function Prediction() {
          * Fetches data from the "api/locations" endpoint.
          * Processes the response and sets the addressesSearchOptions state.
          */
+        setIsFetchingAdresses(true)
         fetch("api/locations", options)
             .then(response => {
                 if (response.ok) {
@@ -62,10 +97,11 @@ export default function Prediction() {
                         }[]
                     }).get('results').map((add, index) => ({
                         key: index,
-                        text: `${add.numero} ${add.nom_voie}, ${add.code_postal} ${add.nom_commune}`,
+                        text: `${add.numero} ${add.nom_voie} ${add.code_postal} ${add.nom_commune}`,
                         value: JSON.stringify(add)
                     })).value()
                     setAddressesSearchOptions(addOptions)
+                    setIsFetchingAdresses(false)
                 }
             })
 
@@ -94,7 +130,7 @@ export default function Prediction() {
     /**
      *
      */
-    const [steps, setSteps] = useState(3)
+    const [steps, setSteps] = useState(0)
 
     /**
      * State for storing the mutation data.
@@ -120,7 +156,7 @@ export default function Prediction() {
     } as Omit<Mutation, 'new_id_mutation'>)
 
     const [typeLocal, setTypeLocal] = useState(undefined as 'Appartement' | 'Maison' | undefined)
-    const [surface, setSurface] = useState(undefined as number | undefined)
+    const [surface, setSurface] = useState<number>()
 
     const [model, setModel] = useState({
         modelName: 'CityRegressor',
@@ -137,9 +173,13 @@ export default function Prediction() {
     return (
         <div className={'h-full'}>
             <AppBarComponent/>
-            <div className={'w-full h-full pt-16 mx-auto border-b-blue-700 flex justify-center'}>
+            <div
+                className={'w-full h-full pt-16 mx-auto border-b-blue-700 flex justify-center bg-gradient-to-b from-white from-80% to-gray-200'}>
                 <div className={'w-100 p-10'}>
-                    {steps === 0 && <div className={'h-60'}>
+                    {steps === 0 && <motion.div initial={{opacity: 0}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                transition={{duration: 0.1}}
+                                                className={'h-64 flex flex-col justify-between'}>
                         <h1>What is the address of the property to be valued?</h1>
                         <form className={''}>
                             {/* This semantic dropdown may be considred as HTMLInputElement, with a value props
@@ -147,9 +187,9 @@ export default function Prediction() {
                             we can't use object as value, so we must convert the object to a string using JSON.stringify() and then parse it back to object using JSON.parse()
                             */}
                             <Dropdown icon='search'
-                                      loading={false}
+                                      loading={isFetchingAdresses}
                                       style={{height: '40px'}}
-                                      placeholder='Write an adress...'
+                                      placeholder='3 rue noel tessier...'
                                       search
                                       selection
                                       className={'w-full'}
@@ -164,61 +204,70 @@ export default function Prediction() {
 
                         </form>
                         <div className={'flex justify-center pt-10'}>
-                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
+                            <Button onClick={() => setSteps((prev) => prev + 1)}
                                     disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Next</Button>
                         </div>
-                    </div>}
-                    {steps === 1 && <div className={'h-60'}>
+                    </motion.div>}
+                    {steps === 1 && <motion.div initial={{opacity: 0}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                transition={{duration: 0.1}}
+                                                className={'h-64 flex flex-col justify-between'}>
                         <h1>What type of accommodation is it?</h1>
                         <div className={'flex justify-center mx-2'}>
                             <div onClick={() => setTypeLocal('Maison')}
-                                 className={`flex flex-col items-center border-2 rounded w-80 p-10 hover:bg-gray-100 ${typeLocal === 'Maison' && 'border-2 border-blue-700 hover:bg-transparent'}`}>
+                                 className={`flex flex-col items-center border rounded w-40 p-2 hover:bg-gray-100 ${typeLocal === 'Maison' && 'border border-black hover:bg-transparent'}`}>
                                 <FontAwesomeIcon icon={faHouse} size={'4x'} fixedWidth color={'darkgray'}
-                                                 className={`p-10 ${typeLocal === 'Maison' && 'text-blue-700'}`}/>
+                                                 className={`p-3 ${typeLocal === 'Maison' && 'text-black'}`}/>
                                 <div className={'flex justify-center'}>
-                                    <p className={`text-gray-500 ${typeLocal === 'Maison' && 'text-blue-700'}`}>House</p>
+                                    <p className={`text-gray-500 ${typeLocal === 'Maison' && 'text-black'}`}>House</p>
                                 </div>
                             </div>
                             <div className={'flex justify-center mx-2'}>
                                 <div onClick={() => setTypeLocal('Appartement')}
-                                     className={`flex flex-col items-center border-2 rounded w-80 p-10 hover:bg-gray-100 ${typeLocal === 'Appartement' && 'border-2 border-blue-700 hover:bg-transparent'}`}>
+                                     className={`flex flex-col items-center border rounded w-40 p-2 hover:bg-gray-100 ${typeLocal === 'Appartement' && 'border border-black hover:bg-transparent'}`}>
                                     <FontAwesomeIcon icon={faBuilding} size={'4x'} fixedWidth color={'darkgray'}
-                                                     className={`p-10 ${typeLocal === 'Appartement' && 'text-blue-700'}`}
+                                                     className={`p-3 ${typeLocal === 'Appartement' && 'text-black'}`}
                                     />
                                     <div className={'flex justify-center'}>
-                                        <p className={`text-gray-500 ${typeLocal === 'Appartement' && 'text-blue-700'}`}>Appartement</p>
+                                        <p className={`text-gray-500 ${typeLocal === 'Appartement' && 'text-black'}`}>Appartement</p>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
 
-                        <div className={'flex justify-center pt-10'}>
-                            <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
+                        <div className={'flex justify-center'}>
+                            <Button onClick={() => setSteps((prev) => prev - 1)}
                                     disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
-                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
+                            <Button onClick={() => setSteps((prev) => prev + 1)}
                                     disabled={_.isUndefined(typeLocal)}>Next</Button>
                         </div>
-                    </div>}
-                    {steps === 2 && <div className={'h-60'}>
+                    </motion.div>}
+                    {steps === 2 && <motion.div initial={{opacity: 0}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                transition={{duration: 0.1}}
+                                                className={'h-64 flex flex-col justify-between'}>
                         <h1>How much living space does your property have?</h1>
                         <div className={'flex justify-center mx-2'}>
-                            <Input labelPosition='right' type='number' placeholder='Surface' className={'w-96'}>
-                                <input value={surface}
-                                       onChange={(e) => setSurface(e.target.value == '' ? undefined : Number(e.target.value))}/>
+                            <Input labelPosition='right' type='number' placeholder='Surface' className={'w-96'}
+                                   onChange={(e) => setSurface(e.target.value == '' ? undefined : Number(e.target.value))}>
+                                <input value={surface}/>
                                 <Label>m<sup>2</sup></Label>
                             </Input>
                         </div>
 
                         <div className={'flex justify-center pt-10'}>
-                            <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
+                            <Button onClick={() => setSteps((prev) => prev - 1)}
                                     disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
-                            <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
-                                    disabled={_.isUndefined(surface)}>Predict</Button>
+                            <Button onClick={() => setSteps((prev) => prev + 1)}
+                                    disabled={_.isUndefined(surface)}>Next</Button>
                         </div>
-                    </div>}
+                    </motion.div>}
 
-                    {steps === 3 && <div className={'h-60'}>
+                    {steps === 3 && <motion.div initial={{opacity: 0}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                transition={{duration: 0.1}}
+                                                className={'h-64 flex flex-col justify-between'}>
                         <h1>Choose your model</h1>
                         <div className={'flex justify-center mx-2'}>
                             <Form className={'flex flex-row'}>
@@ -292,16 +341,85 @@ export default function Prediction() {
                             </Form>
 
                         </div>
-                        <div>
+                        <div className={'pb-10'}>
                             {_.chain(modelTemplate).get(model.modelName).value()}
+                        </div>
+                        <div className={'flex justify-center'}>
+                            <Button onClick={() => setSteps((prev) => prev - 1)}>Previous</Button>
+                            <Button color={'black'} onClick={() => {
+                                setSteps((prev) => prev + 1)
+                                const latitude = JSON.parse(selectedAddress).geolocalisation_adresse.lat
+                                const longitude = JSON.parse(selectedAddress).geolocalisation_adresse.lon
+                                const city = JSON.parse(selectedAddress).nom_commune
+                                const code_postal = JSON.parse(selectedAddress).code_insee
+                                // put all previous var in json
+                                const newInfo = {
+                                    latitude: JSON.parse(selectedAddress).geolocalisation_adresse.lat,
+                                    longitude: JSON.parse(selectedAddress).geolocalisation_adresse.lon,
+                                    nom_commune: JSON.parse(selectedAddress).nom_commune,
+                                    code_commune: JSON.parse(selectedAddress).code_insee,
+                                    code_postal: JSON.parse(selectedAddress).code_postal,
+                                    adresse_numero: JSON.parse(selectedAddress).numero,
+                                    adresse_nom_voie: JSON.parse(selectedAddress).nom_voie,
+                                    type_local: typeLocal
+                                }
+                                setMutation(_.extend(mutation, newInfo))
+                                makePrediction(model, mutation)
+                            }}
+                                    disabled={model.ready == false}>Predict</Button>
 
                         </div>
-                    </div>}
-                    <Button color={'red'} onClick={() => setSteps((prev) => prev - 1)}
-                            disabled={_.isEmpty(addressesSearchOptions) || _.isEmpty(selectedAddress)}>Previous</Button>
-                    <Button color={'green'} onClick={() => setSteps((prev) => prev + 1)}
-                            disabled={model.ready == false}>Predict</Button>
 
+                    </motion.div>}
+
+                    {steps === 4 && <motion.div initial={{opacity: 0.5}}
+                                                animate={{opacity: 1, scale: 1}}
+                                                transition={{duration: 0.2}} className={'h-60'}>
+                        <h1>Your estimation</h1>
+                        <motion.div initial={{opacity: 0}}
+                                    animate={{opacity: 1, scale: 1}}
+                                    transition={{duration: 0.4}}>
+                            <p className={'text-gray-500 whitespace-normal dark:text-gray-400'}><span
+                                className={'text-black font-semibold'}>Adress</span>: {`${mutation.adresse_numero} ${mutation.adresse_nom_voie}, ${mutation.code_commune} ${mutation.nom_commune}`}
+                            </p>
+                            <p className={'text-gray-500 whitespace-normal dark:text-gray-400'}><span
+                                className={'text-black font-semibold'}>Localization</span>: {mutation.latitude}, {mutation.longitude}
+                            </p>
+                            <p className={'text-gray-500 whitespace-normal dark:text-gray-400'}><span
+                                className={'text-black font-semibold'}>Type of local</span>: {typeLocal}</p>
+                            <p className={'text-gray-500 whitespace-normal dark:text-gray-400'}><span
+                                className={'text-black font-semibold'}>Model</span>: {model.modelName}</p>
+                        </motion.div>
+                        <div className={'flex justify-center pt-10'}>
+                            {isLoading ? <CircularProgress color={'inherit'}/> : <motion.div initial={{opacity: 0}}
+                                                                                             animate={{
+                                                                                                 opacity: 1,
+                                                                                                 scale: 1
+                                                                                             }}
+                                                                                             transition={{duration: 0.1}}
+                                                                                             className={''}>
+                                <p className={'text-4xl font-bold text-gray-900 dark:text-white'}>{prediction.toLocaleString('fr-FR', {
+                                    style: 'currency',
+                                    currency: 'EUR',
+                                    minimumFractionDigits: 2
+                                })}</p>
+
+                                <div>
+                                    <Button onClick={() => {
+                                        setModel({
+                                            modelName: 'CityRegressor',
+                                            parameters: {},
+                                            ready: true
+                                        })
+                                        setSteps((prev) => prev - 1)
+                                    }}>Previous</Button>
+
+                                    <Button onClick={() => setSteps(0)}>Restart</Button>
+
+                                </div>
+                            </motion.div>}
+                        </div>
+                    </motion.div>}
                 </div>
 
             </div>

@@ -8,7 +8,7 @@ import KNNRegressorInput from "./KNNRegressorInput.tsx";
 
 const ModelSelector = ({
   onModelSubmit,
-  onCancel = () => {},
+  onCancel = () => { },
 }: {
   onModelSubmit: (model: {
     modelName: string;
@@ -115,6 +115,7 @@ const ModelSelector = ({
             value="KMeansRegressor"
             checked={model.modelName === "KMeansRegressor"}
             onClick={(event, data) => {
+              event.preventDefault();
               setModel({
                 modelName: "KMeansRegressor",
                 parameters: {},

@@ -40,7 +40,8 @@ const DisplayModels = ({
           <Button
             size={"tiny"}
             color={"black"}
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               console.log(params.row.modelID);
               removeModel(params.row.modelID);
             }}

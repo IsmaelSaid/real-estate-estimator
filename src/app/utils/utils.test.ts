@@ -1,4 +1,4 @@
-import {Mutation} from "@prisma/client";
+import { Mutation } from "@prisma/client";
 import {
     buildOppdnDataSoftUrl,
     calculateSquareMeterValue,
@@ -93,14 +93,14 @@ describe('calculateSquareMeterValueByYear', () => {
 
     it('should calculate square meter value correctly', () => {
         const result = calculateSquareMeterValueByYear(pseudoMutations);
-        expect(result).toStrictEqual([{year: 2020, pricesPerSquarMeter: [20, 10]}]);
+        expect(result).toStrictEqual([{ year: 2020, pricesPerSquarMeter: [20, 10] }]);
     });
 });
 
 describe('countPropertyTypesByCity', () => {
     it('should count property types correctly', () => {
         const result = countPropertyTypesByCity(pseudoMutations);
-        expect(result).toStrictEqual([{city: '97418 Sainte Marie', count: {Maison: 1, Appartement: 1}}]);
+        expect(result).toStrictEqual([{ city: '97418 Sainte Marie', count: { Maison: 1, Appartement: 1 } }]);
     });
 });
 
@@ -117,9 +117,9 @@ describe('countPropertyTypesByYear', () => {
     });
 });
 
-describe('PrepareUserInput function should works if',()=>{
+describe('PrepareUserInput function should works if', () => {
 
-    test('Valid strings and numbers',()=>{
+    test('Valid strings and numbers', () => {
         const testUserInput = "14 rue georges marchais 97441 Sainte Suzanne"
         const expectedPreparedUserInput = {
             numbers: [14, 97441],
@@ -128,7 +128,7 @@ describe('PrepareUserInput function should works if',()=>{
 
         expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
     })
-    test('No valid strings',()=>{
+    test('No valid strings', () => {
         const testUserInput = "14 97441"
         const expectedPreparedUserInput = {
             numbers: [14, 97441],
@@ -138,7 +138,7 @@ describe('PrepareUserInput function should works if',()=>{
         expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
     })
 
-    test('No numbers',()=>{
+    test('No numbers', () => {
         const testUserInput = "rue georges marchais sainte-suzanne"
         const expectedPreparedUserInput = {
             numbers: [],
@@ -148,7 +148,7 @@ describe('PrepareUserInput function should works if',()=>{
         expect(SeparateNumbersFromStrings(testUserInput)).toStrictEqual(expectedPreparedUserInput)
     })
 
-    test('Empty string',()=>{
+    test('Empty string', () => {
         const testUserInput = ""
         const expectedPreparedUserInput = {
             numbers: [],
@@ -160,26 +160,26 @@ describe('PrepareUserInput function should works if',()=>{
 
 })
 
-describe('buildOpenDataSoftUrl should works',()=>{
-    test('Search on complete url',()=>{
+describe('buildOpenDataSoftUrl should works', () => {
+    test('Search on complete url', () => {
         const testUserInput = "14 rue georges marchais 97441 Sainte-Suzanne"
         const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=search(*,\'RUE GEORGES MARCHAIS SAINTE SUZANNE\') and numero in (14,97441)&limit=20'
         expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
     })
 
-    test('Search on strings only',()=>{
+    test('Search on strings only', () => {
         const testUserInput = "rue georges marchais Sainte-Suzanne"
         const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=search(*,\'RUE GEORGES MARCHAIS SAINTE SUZANNE\')&limit=20'
         expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
     })
 
-    test('Search on numbers only',()=>{
+    test('Search on numbers only', () => {
         const testUserInput = "14 97441"
         const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?where=numero in (14,97441)&limit=20'
         expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)
     })
 
-    test('Search on empty user input',()=>{
+    test('Search on empty user input', () => {
         const testUserInput = ""
         const url = 'https://data.regionreunion.com/api/explore/v2.1/catalog/datasets/ban-lareunion/records?limit=20'
         expect(buildOppdnDataSoftUrl(testUserInput)).toBe(url)

@@ -1,12 +1,15 @@
 "use client";
 
+/* eslint-disable */
 import AppBarComponent from "@/app/components/AppBarComponent.tsx";
 import { useState } from "react";
-import { Button, Form, FormField, Portal, Radio } from "semantic-ui-react";
+import { Button, FormField, Input, Portal, Radio } from "semantic-ui-react";
 import _ from "lodash";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
-import ModelSelector from "../components/inputs/ModelSelector";
+import DisplayModels from "@/app/components/inputs/DisplayModels.tsx";
+import { z } from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ModelSelector from "../components/inputs/ModelSelector.tsx";
 
 export default function Experiment() {
   const [portalOpen, setPortalOpen] = useState(false);
@@ -37,48 +40,89 @@ export default function Experiment() {
     );
   };
 
+  const schema = z.object({
+    numbersOfPredictions: z
+      .number({ invalid_type_error: "You must provide a valid number" })
+      .int()
+      .positive()
+      .min(2)
+      .max(10),
+  });
+
+  type formFields = z.infer<typeof schema>;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<formFields>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      numbersOfPredictions: undefined,
+    },
+  });
+
+  const onSubmit: SubmitHandler<formFields> = async (data) => {
+    console.log(data);
+    console.log(models);
+  };
+
   return (
     <div className={"h-full"}>
       <AppBarComponent />
       <div className={"w-full h-full pt-16 mx-auto flex justify-center"}>
-        <div className={"w-full ml-96 mr-96 p-10 shadow bg-white"}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={"w-full ml-96 mr-96 p-10 shadow bg-white"}
+        >
           <div className={""}>
             <h1>Set up your experiment</h1>
             <h5>Select the type of local</h5>
-            <Form>
-              <FormField>
-                <Radio
-                  label="House"
-                  name="radioGroup"
-                  value="House"
-                  checked={typeOfLocal === "House"}
-                  onClick={() => setTypeOfLocal("House")}
-                />
-              </FormField>
-              <FormField>
-                <Radio
-                  label="Apartment"
-                  type={"radio"}
-                  value={"Apartment"}
-                  checked={typeOfLocal === "Apartment"}
-                  onClick={(_event) => setTypeOfLocal("Apartment")}
-                />
-              </FormField>
-            </Form>
+            <FormField>
+              <Radio
+                label="House"
+                name="radioGroup"
+                value="House"
+                checked={typeOfLocal === "House"}
+                onClick={() => setTypeOfLocal("House")}
+              />
+            </FormField>
+            <FormField>
+              <Radio
+                label="Apartment"
+                type={"radio"}
+                value={"Apartment"}
+                checked={typeOfLocal === "Apartment"}
+                onClick={(_event) => setTypeOfLocal("Apartment")}
+              />
+            </FormField>
 
             <h5>Number of predictions</h5>
-            <div className={"flex"}>
-              <Form>
-                <FormField>
-                  <input
-                    type="number"
-                    value={numberOfPredictions || ""}
-                    onChange={(e) =>
-                      setNumberOfPredictions(Number(e.target.value))
-                    }
-                  />
-                </FormField>
-              </Form>
+            <div className={"flex flex-col"}>
+              <label
+                htmlFor="radius"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Number of predictions
+              </label>
+              <Input>
+                <input
+                  required={true}
+                  id={"numbersOfPredictions"}
+                  {...register("numbersOfPredictions", {
+                    valueAsNumber: true,
+                  })}
+                  type="number"
+                  value={numberOfPredictions}
+                />
+              </Input>
+              {errors.numbersOfPredictions ? (
+                <p className={"text-red-500"}>
+                  {errors.numbersOfPredictions.message}
+                </p>
+              ) : (
+                <p className={"text-red-500 invisible"}>error</p>
+              )}
             </div>
 
             <h5>Model selection</h5>
@@ -95,116 +139,50 @@ export default function Experiment() {
               <DisplayModels models={models} removeModel={removeModel} />
             </div>
           </div>
-        </div>
-        <Portal open={portalOpen}>
-          <div
-            className={
-              "h-full w-full top-0 left-0 fixed flex justify-center items-center border bg-black/50 backdrop-blur-lg"
-            }
-          >
-            <div
-              className={"h-96 flex items-center shadow bg-white rounded p-10"}
+          {/*margin top of 52px*/}
+
+          <div style={{ marginTop: "55px" }} className={"flex justify-center "}>
+            <Button
+              type={"submit"}
+              style={{ marginTop: "10px" }}
+              color={"black"}
+              disabled={_.isEmpty(models)}
             >
-              <ModelSelector
-                onCancel={handleClosePortal}
-                onModelSubmit={(model: {
-                  modelName: string;
-                  parameters: object;
-                }) => {
-                  handleClosePortal();
-                  setModels(
-                    _.chain(models)
-                      .clone()
-                      .push({
-                        modelID: `${model.modelName}${Date.now()}`,
-                        ...model,
-                      })
-                      .value(),
-                  );
-                }}
-              />
-            </div>
+              Run experiment
+            </Button>
           </div>
-        </Portal>
+        </form>
       </div>
+      <Portal open={portalOpen}>
+        <div
+          className={
+            "h-full w-full top-0 left-0 fixed flex justify-center items-center border bg-black/50 backdrop-blur-lg"
+          }
+        >
+          <div
+            className={"h-96 flex items-center shadow bg-white rounded p-10"}
+          >
+            <ModelSelector
+              onCancel={handleClosePortal}
+              onModelSubmit={(model: {
+                modelName: string;
+                parameters: object;
+              }) => {
+                handleClosePortal();
+                setModels(
+                  _.chain(models)
+                    .clone()
+                    .push({
+                      modelID: `${model.modelName}${Date.now()}`,
+                      ...model,
+                    })
+                    .value(),
+                );
+              }}
+            />
+          </div>
+        </div>
+      </Portal>
     </div>
   );
 }
-
-const DisplayModels = ({
-  models,
-  removeModel,
-}: {
-  models: { modelID: string; modelName: string; parameters: object }[];
-  removeModel: (modelID: string) => void;
-}) => {
-  const modelsWithFormattedParameters: {
-    modelID: string;
-    modelName: string;
-    parameters: object;
-    formatedParameters: string;
-  }[] = _.chain(models)
-    .map((model) =>
-      _.extend(model, { formatedParameters: modelToString(model) }),
-    )
-    .value();
-  const columns: GridColDef<(typeof modelsWithFormattedParameters)[number]>[] =
-    [
-      {
-        field: "modelName",
-        headerName: "Model name",
-        flex: 1,
-      },
-      {
-        field: "formatedParameters",
-        headerName: "parameters",
-        flex: 1,
-      },
-      {
-        field: "modelID",
-        headerName: "action",
-        renderCell: (params) => {
-          return (
-            <Button
-              size={"tiny"}
-              color={"black"}
-              onClick={() => {
-                console.log(params.row.modelID);
-                removeModel(params.row.modelID);
-              }}
-            >
-              Delete
-            </Button>
-          );
-        },
-      },
-    ];
-
-  return (
-    <Box className={"h-full shadow bg-white"}>
-      <DataGrid
-        getRowId={(row) => row.modelID}
-        rows={modelsWithFormattedParameters}
-        columns={columns}
-        pageSizeOptions={[1]}
-        disableRowSelectionOnClick
-      />
-    </Box>
-  );
-};
-
-const modelToString = (model: {
-  modelName: string;
-  parameters: object;
-}): string => {
-  switch (model.modelName) {
-    case "KMeansRegressor":
-      return `${_.get(model, "parameters.numberOfClusters")} cluster(s)`;
-    case "RadiusRegressor":
-      return `${_.get(model, "parameters.radius")} km`;
-    case "KNNRegressor":
-      return `${_.get(model, "parameters.numberOfNeighbors")} neighbor(s)`;
-    default:
-      return "";
-  }
-};

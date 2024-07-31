@@ -72,9 +72,7 @@ const KMeansRegressorInput = ({
           <p className={"text-red-500 invisible"}>error</p>
         )}
         <div className={"flex justify-center"}>
-          <Button color={"gray"} onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
           <Button color={"black"} type={"submit"}>
             Use this model
           </Button>

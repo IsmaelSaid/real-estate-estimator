@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Label } from "semantic-ui-react";
 import { motion } from "framer-motion";
+import _ from "lodash";
 
 /**
  *
@@ -83,7 +84,7 @@ const RadiusRegressorInput = ({
           <p className={"text-red-500 invisible"}>error</p>
         )}
         <div className={"flex justify-center"}>
-          <Button color={"gray"} onClick={onCancel}>
+          <Button onClick={onCancel}>
             Cancel
           </Button>
           <Button color={"black"} type={"submit"}>

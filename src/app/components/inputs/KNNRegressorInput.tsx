@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input } from "semantic-ui-react";
 import { motion } from "framer-motion";
+import _ from "lodash";
 
 /**
  *
@@ -78,7 +79,7 @@ const KNNRegressorInput = ({
           <p className={"text-red-500 invisible"}>error</p>
         )}
         <div className={"flex justify-center"}>
-          <Button color={"gray"} onClick={onCancel}>
+          <Button onClick={onCancel}>
             Cancel
           </Button>
           <Button color={"black"} type={"submit"}>

@@ -16,7 +16,8 @@
     "clear:prod": "dotenv -e .env.prod -- prisma db push --force-reset",
     "generate:prod": "dotenv -e .env.prod -- prisma generate",
     "generate:dev": "dotenv -e .env.dev -- prisma generate",
-    "test": "npm run clear:dev && npm run seed:dev && dotenv -e .env.dev -- jest -i --detectOpenHandles"
+    "test": "npm run clear:dev && npm run seed:dev && dotenv -e .env.dev -- jest -i --detectOpenHandles",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

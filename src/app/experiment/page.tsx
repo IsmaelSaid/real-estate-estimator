@@ -4,13 +4,51 @@
 import AppBarComponent from "@/app/components/AppBarComponent.tsx";
 import { useState } from "react";
 import { Button, FormField, Input, Portal, Radio } from "semantic-ui-react";
-import _ from "lodash";
+import _, { result, set } from "lodash";
 import DisplayModels from "@/app/components/inputs/DisplayModels.tsx";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ModelSelector from "../components/inputs/ModelSelector.tsx";
+import { Bar } from "react-chartjs-2";
 
+import { Colors } from 'chart.js';
+
+
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  LineElement,
+  Legend,
+  PointElement,
+  LineController,
+  ArcElement,
+} from "chart.js";
+
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineController,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Colors
+);
+
+type ExperimentalResults = {
+  results: { modelName: string, predictions: [], trueValues: [] }[]
+}
 export default function Experiment() {
   const [portalOpen, setPortalOpen] = useState(false);
 
@@ -46,14 +84,14 @@ export default function Experiment() {
       .int()
       .positive()
       .min(2)
-      .max(10),
+      .max(500),
   });
 
   type formFields = z.infer<typeof schema>;
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setError,
   } = useForm<formFields>({
     resolver: zodResolver(schema),
@@ -62,9 +100,36 @@ export default function Experiment() {
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [isResultPortalOpen, setIsResultPortalOpen] = useState(false);
+
+  const [experimentalResults, setExperimentalResults] = useState({} as ExperimentalResults);
+
+
   const onSubmit: SubmitHandler<formFields> = async (data) => {
-    console.log(data);
-    console.log(models);
+    setNumberOfPredictions(data.numbersOfPredictions);
+    type ExperimentalSettings = { models: object; settings: { numberOfPredictions: number; typeoflocal: string } }
+    const experimentSettings: ExperimentalSettings = _.chain({ models: models }).extend({ settings: { numberOfPredictions: data.numbersOfPredictions, typeoflocal: typeOfLocal } }).value();
+
+    setIsSubmitting(true);
+    fetch("/api/experiment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(experimentSettings),
+    }).then((async response => {
+      if (response.ok) {
+        setIsSubmitting(false);
+        const results = await response.json() as ExperimentalResults
+        setIsResultPortalOpen(true)
+        setExperimentalResults(results)
+      }
+      else {
+        throw new Error("Error")
+      }
+    })).then((data) => { console.info(data) }).catch((error) => { console.error(error) });
   };
 
   return (
@@ -113,7 +178,6 @@ export default function Experiment() {
                     valueAsNumber: true,
                   })}
                   type="number"
-                  value={numberOfPredictions}
                 />
               </Input>
               {errors.numbersOfPredictions ? (
@@ -131,7 +195,10 @@ export default function Experiment() {
                 <Button
                   color={"black"}
                   size={"tiny"}
-                  onClick={() => handleOpenPortal()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleOpenPortal()
+                  }}
                 >
                   Add a model
                 </Button>
@@ -147,8 +214,11 @@ export default function Experiment() {
               style={{ marginTop: "10px" }}
               color={"black"}
               disabled={_.isEmpty(models)}
+              loading={isSubmitting}
             >
               Run experiment
+
+
             </Button>
           </div>
         </form>
@@ -183,6 +253,57 @@ export default function Experiment() {
           </div>
         </div>
       </Portal>
+      <Portal open={isResultPortalOpen}>
+        <div
+          className={
+            "h-full w-full top-0 left-0 fixed flex justify-center items-center border bg-white"
+          }
+        >
+          <div style={{ display: "flex", height: '100%', width: '1000px', flexDirection: 'column', justifyContent: 'center' }}>
+            <DisplayExperimentResults results={experimentalResults} typeoflocal={typeOfLocal} numberofpredictions={numberOfPredictions} />
+            <div style={{ textAlign: 'center' }}>
+              <Button onClick={() => setIsResultPortalOpen(false)}>Close</Button>
+
+            </div>
+
+          </div>
+        </div>
+      </Portal>
     </div>
+  );
+}
+
+
+const DisplayExperimentResults = ({ results, typeoflocal, numberofpredictions }: { results: ExperimentalResults, typeoflocal: string, numberofpredictions: number | undefined }) => {
+  const barplotData = {
+    labels: ["Models"],
+    datasets: _.chain(results.results).map((result) => {
+      return {
+        label: result.modelName.replace(':', ' '),
+        data: [_.chain(result.predictions).map((res, index) => Math.abs(res - result.trueValues[index])).mean().value()],
+      }
+    }
+    ).value()
+  };
+  const barplotOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: `Mean absolute error score for ${numberofpredictions} predictions`,
+      },
+    },
+    responsive: true,
+    scales: {
+      x: {
+        stacked: false,
+      },
+      y: {
+        stacked: false,
+      },
+    },
+  };
+  return (
+    <Bar options={barplotOptions} data={barplotData} />
+
   );
 }

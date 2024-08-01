@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import 'semantic-ui-css/semantic.min.css'
 import './style.css'
-import {AuthProvider} from "@/app/Providers";
+import AuthProvider from "@/app/Providers.tsx";
 
 const inter = Inter({ subsets: ["latin"] });
 

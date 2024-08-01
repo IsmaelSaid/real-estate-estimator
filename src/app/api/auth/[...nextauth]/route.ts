@@ -1,8 +1,6 @@
 import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {POST} from '@/app/api/signin/route'
-
-
+import {POST} from '@/app/api/signin/route.ts'
 
 const authOptions: NextAuthOptions = {
     session: {
@@ -12,14 +10,14 @@ const authOptions: NextAuthOptions = {
         CredentialsProvider({
             type: 'credentials',
             credentials: {},
-            async authorize(credentials, req) {
+            async authorize(credentials) {
                 const {email, password} = credentials as { email: string, password: string }
                 const requestObj = {
-                    json: async () => ({email: email, password: password}),
+                    json: async () => ({email, password}),
                 } as Request;
                 const response = await POST(requestObj);
                 const responseBody = await response.json();
-                if (response.status == 200) {
+                if (response.status === 200) {
                     const userCredentials: {
                         email: string,
                         name: string,
@@ -35,7 +33,7 @@ const authOptions: NextAuthOptions = {
     pages: {
         signIn: '/signin'
     },
-    secret : process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET
 }
 
 const handler = NextAuth(authOptions)

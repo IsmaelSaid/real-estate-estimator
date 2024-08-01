@@ -53,9 +53,9 @@ export const POST = async (request: Request) => {
       dataset,
       typeoflocal,
       9,
-      200,
-      10000,
-      900000,
+      100,
+      50000,
+      500000,
     );
 
     // remove random mutation

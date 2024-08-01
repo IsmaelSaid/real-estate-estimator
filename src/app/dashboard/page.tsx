@@ -1,10 +1,11 @@
 import AppBarComponent from "@/app/components/AppBarComponent";
+import {DashboardComponent} from "@/app/components/dashboard/DashboardComponent";
+export default async function Dashboard() {
 
-export default function Dashboard() {
     return (
-        <div>
+        <div className={'h-full'}>
             <AppBarComponent/>
-            <h1>Dashboard placeholder</h1>
+            <DashboardComponent/>
         </div>
     );
 }

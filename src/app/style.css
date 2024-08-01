@@ -1,0 +1,42 @@
+body {
+    --colorInterface: lightgray;
+}
+
+.ui.selection.active.dropdown {
+    border-color: var(--colorInterface);
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15)
+}
+
+.ui.selection.active.dropdown .menu {
+    border-color: var(--colorInterface);
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15)
+}
+
+.ui.selection.dropdown:focus {
+    border-color: var(--colorInterface);
+    box-shadow: none
+}
+
+.ui.selection.dropdown:focus .menu {
+    border-color: var(--colorInterface);
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15)
+}
+
+.ui.selection.visible.dropdown>.text:not(.default) {
+    font-weight: 400;
+    color: rgba(0, 0, 0, .8)
+}
+
+.ui.selection.active.dropdown:hover {
+    border-color: var(--colorInterface);
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15)
+}
+
+.ui.selection.active.dropdown:hover .menu {
+    border-color: var(--colorInterface);
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15)
+}
+
+.MuiDataGrid-scrollbar {
+    display: none !important;
+}

@@ -1,3 +1,4 @@
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,4 +14,25 @@ model User {
   lastname  String
   username  String @unique
   password  String
+}
+
+model Mutation {
+  new_id_mutation           String   @id @map("_id")
+  id_mutation               String
+  date_mutation             DateTime
+  nature_mutation           String
+  valeur_fonciere           Float
+  adresse_numero            Int
+  adresse_nom_voie          String
+  adresse_code_voie         String
+  code_postal               Int
+  code_commune              Int
+  nom_commune               String
+  code_departement          Int
+  nombre_lots               Int
+  type_local                String
+  surface_reelle_bati       Float
+  nombre_pieces_principales Int
+  longitude                 Float
+  latitude                  Float
 }

@@ -34,6 +34,7 @@ jobs:
         cp package.json build/
         cp package-lock.json build/
         cp -r public build/
+        cp prisma/schema.prisma build/
         tar -czvf build.tar.gz -C build .
 
     - name: Upload build artifact
@@ -73,6 +74,9 @@ jobs:
 
           # Install dependencies in production mode
           npm install --production
+
+          # npx must be installed ..
+          npx prisma generate
 
           # Stop the current application
           pm2 stop nextjs-app || true

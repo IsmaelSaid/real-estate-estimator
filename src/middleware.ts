@@ -6,4 +6,4 @@ export default withAuth({
   },
 });
 
-export const config = { matcher: ["/dashboard", "/experiment"] };
+export const config = { matcher: ["/experiment"] };

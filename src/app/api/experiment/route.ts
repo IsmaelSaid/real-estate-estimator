@@ -7,7 +7,7 @@ import { KNearestNeighborsRegressor } from "../../models/KNearestNeighborsRegres
 import { extractTrainingData, modelToString } from "../../utils/utils.ts";
 import { CityRegressor } from "../../models/CityRegressor.ts";
 import { RadiusRegressor } from "../../models/RadiusRegressor.ts";
-import prisma from "../../../../prisma/prisma.ts";
+import prisma from "@/app/prisma/prisma.ts";
 
 const inferModel = (model: { modelName: string; parameters: Object }) => {
   switch (model.modelName) {

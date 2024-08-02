@@ -1,7 +1,7 @@
-import {NextResponse} from "next/server";
-import prisma from "../../../../prisma/prisma";
+import { NextResponse } from "next/server";
 import bcrypt from 'bcrypt';
-import {User} from "@prisma/client";
+import { User } from "@prisma/client";
+import prisma from "@/app/prisma/prisma";
 
 /**
  * POST handler for the register route.
@@ -16,29 +16,29 @@ export async function POST(request: Request) {
     try {
         // Parse the request body to get the user details
         const body: User = await request.json();
-        const {email, firstname, lastname, username, password} = body
+        const { email, firstname, lastname, username, password } = body
         console.info(email, firstname, lastname, username, password)
 
 
         // Check if all required fields are present
         if (!email || !firstname || !lastname || !username || !password) {
-            return NextResponse.json({error: 'Missing required fields'}, {status: 500});
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 500 });
         }
 
         // Check if the email already exists in the database
         const user1: User | null = await prisma.user.findUnique({
-            where: {email}
+            where: { email }
         })
         if (user1) {
-            return NextResponse.json({error: 'This email already exists'}, {status: 500});
+            return NextResponse.json({ error: 'This email already exists' }, { status: 500 });
         }
 
         // Check if the email already exists in the database
         const user2: User | null = await prisma.user.findUnique({
-            where: {username}
+            where: { username }
         })
         if (user2) {
-            return NextResponse.json({error: 'This username already exists'}, {status: 500});
+            return NextResponse.json({ error: 'This username already exists' }, { status: 500 });
         }
 
         // Hash the password before storing it in the database
@@ -57,9 +57,9 @@ export async function POST(request: Request) {
         })
 
         // Return a success response with the created user
-        return NextResponse.json({message: 'ok', createdUser: newUser}, {status: 201});
+        return NextResponse.json({ message: 'ok', createdUser: newUser }, { status: 201 });
     } catch (e) {
         // Return an error response in case of any exceptions
-        return NextResponse.json({error: 'Internal server error'+e}, {status: 500});
+        return NextResponse.json({ error: 'Internal server error' + e }, { status: 500 });
     }
 }

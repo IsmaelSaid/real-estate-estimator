@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { Mutation } from "@prisma/client";
 import {
   isAppartement,
   isVente,
@@ -29,6 +28,7 @@ import {
   BoxAndWiskers,
 } from "@sgratzl/chartjs-chart-boxplot";
 import { quantile } from "simple-statistics";
+import { Mutation } from "@prisma/client";
 
 ChartJS.register(
   CategoryScale,

@@ -1,11 +1,14 @@
-import {NextResponse} from "next/server";
-import {Mutation} from "@prisma/client";
-import {KNearestNeighborsRegressor} from "@/app/models/KNearestNeighborsRegressor.ts";
-import {extractTrainingData} from "@/app/utils/utils.ts";
-import {CityRegressor} from "@/app/models/CityRegressor.ts";
-import {RadiusRegressor} from "@/app/models/RadiusRegressor.ts";
+import { NextResponse } from "next/server";
+import { Mutation, PrismaClient } from "@prisma/client";
+import { KNearestNeighborsRegressor } from "@/app/models/KNearestNeighborsRegressor.ts";
+import { extractTrainingData } from "@/app/utils/utils.ts";
+import { CityRegressor } from "@/app/models/CityRegressor.ts";
+import { RadiusRegressor } from "@/app/models/RadiusRegressor.ts";
 import _ from "lodash";
-import prisma from '../../../../prisma/prisma.ts';
+import prisma from "@/app/prisma/prisma";
+
+
+
 
 const inferModel = (model: { modelName: string, parameters: Object }) => {
     switch (model.modelName) {
@@ -41,10 +44,10 @@ export const POST = async (request: Request) => {
         }
         const model = inferModel(userInput.model) as Model
         model.fit(xTrain, [])
-        return NextResponse.json({model: userInput.model, prediction: model.predict(userInput.target)})
+        return NextResponse.json({ model: userInput.model, prediction: model.predict(userInput.target) })
 
     } catch (e: any) {
-        return NextResponse.json({msg: `error: ${e.message}`, stack: e.stack}, {status: 400});
+        return NextResponse.json({ msg: `error: ${e.message}`, stack: e.stack }, { status: 400 });
     }
 }
 

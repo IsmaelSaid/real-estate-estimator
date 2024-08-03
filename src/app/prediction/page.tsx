@@ -173,7 +173,7 @@ export default function Prediction() {
       <AppBarComponent />
       <div
         className={
-          "w-full h-full pt-16 mx-auto border-b-blue-700 flex justify-center bg-gradient-to-b from-white from-80% to-gray-200"
+          "w-full h-full pt-20 mx-auto border-b-blue-700 flex justify-center bg-gradient-to-b from-white from-80% to-gray-200"
         }
       >
         <div className={"w-100 p-10"}>

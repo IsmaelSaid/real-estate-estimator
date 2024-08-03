@@ -18,7 +18,7 @@ export default function SuccessfullyLoginComponent() {
     return (
         <div
             className={
-                "w-full h-full pt-16 mx-auto flex justify-center items-center"
+                "w-full h-full pt-20 mx-auto flex justify-center items-center"
             }
         >            {session && <p>Successfuly login as {`${session?.user?.firstname} ${session?.user?.lastname}`}</p>}
         </div>

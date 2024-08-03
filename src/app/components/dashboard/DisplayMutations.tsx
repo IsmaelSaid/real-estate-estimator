@@ -19,7 +19,7 @@ export function DisplayMutations({ data }: { data: Mutation[] }) {
   return (
     <div className={"h-4/5"}>
       <div>
-        <h3 className="text-3xl font-bold dark:text-white pb-10">Raw data</h3>
+        <h3 className="text-3xl font-bold dark:text-white pb-10 pt-3">Raw data</h3>
       </div>
 
       <DisplayMutationTable data={data} />

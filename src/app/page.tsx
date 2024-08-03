@@ -9,7 +9,7 @@ export default function Home() {
       <AppBarComponent />
       <div
         className={
-          "w-full h-full pt-16 mx-auto flex justify-center items-center"
+          "w-full h-full pt-20 mx-auto flex justify-center items-center"
         }
       >
         <div className={" flex flex-col"}>

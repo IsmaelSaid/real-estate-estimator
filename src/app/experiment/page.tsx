@@ -135,7 +135,7 @@ export default function Experiment() {
   return (
     <div className={"h-full"}>
       <AppBarComponent />
-      <div className={"w-full h-full pt-16 mx-auto flex justify-center"}>
+      <div className={"w-full h-full pt-20 mx-auto flex justify-center"}>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className={"w-full ml-96 mr-96 p-10 shadow bg-white"}

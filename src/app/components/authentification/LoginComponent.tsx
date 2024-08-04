@@ -107,7 +107,7 @@ export function LoginForm() {
                         {errors.password ? <p className={'text-red-500'}>{errors.password?.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     </div>
-                    <Button color='green' type={"submit"} disabled={isSubmitting} loading={isSubmitting}>Sign in</Button>
+                    <Button color='black' type={"submit"} disabled={isSubmitting} loading={isSubmitting}>Sign in</Button>
                     {errors.root ? <p className={'text-red-500'}>{errors.root?.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     <p className="text-sm font-light text-gray-500 ">

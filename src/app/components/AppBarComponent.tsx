@@ -27,32 +27,32 @@ export default function AppBarComponent({ isAppBarLocked = false }: { isAppBarLo
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.1 }} className={"w-full ml-20 mr-20 flex justify-between items-center"}>
+        transition={{ duration: 0.8 }} className={"w-full ml-20 mr-20 flex justify-between items-center"}>
         <div className={"text-black"}>
-          <Link className={`text-gray-500 pr-3 ${pathname === '/' && 'text-blue-600'}`} href="/">
+          <Link className={`text-black pr-3 ${pathname === '/' && 'text-blue-600'}`} href="/">
             Home
           </Link>
-          <Link className={`text-gray-500 pr-3 ${pathname === '/prediction' && 'text-blue-600'}`} href="/prediction">
+          <Link className={`text-black pr-3 ${pathname === '/prediction' && 'text-blue-600'}`} href="/prediction">
             Predict
           </Link>
           {status === 'authenticated' && !isAppBarLocked && (
             <>
-              <Link className={`text-gray-500 pr-3 ${pathname === '/dashboard' && 'text-blue-600'}`} href="/dashboard">
+              <Link className={`text-black pr-3 ${pathname === '/dashboard' && 'text-blue-600'}`} href="/dashboard">
                 Dashboard
               </Link>
-              <Link className={`text-gray-500 pr-3 ${pathname === '/experiment' && 'text-blue-600'}`} href="/experiment">
+              <Link className={`text-black pr-3 ${pathname === '/experiment' && 'text-blue-600'}`} href="/experiment">
                 Experiment
               </Link>
             </>
           )}
         </div>
-        <div className={"text-gray-500 pr-3"}>
+        <div className={"text-black pr-3"}>
           {status === 'unauthenticated' && (
             <>
-              <Link className={"m-2 text-gray-500 pr-3"} href="/signin">
+              <Link className={`text-black pr-3 ${pathname === '/signin' && 'text-blue-600'}`} href="/signin">
                 Sign in{" "}
               </Link>
-              <Link className={"m-2 text-gray-500 pr-3"} href="/signup">
+              <Link className={`text-black pr-3 ${pathname === '/signup' && 'text-blue-600'}`} href="/signup">
                 sign up
               </Link>
             </>

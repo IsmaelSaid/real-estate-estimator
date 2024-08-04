@@ -1,10 +1,11 @@
 'use client'
-import {useState} from 'react';
-import {signIn} from "next-auth/react";
+import { useState } from 'react';
+import { signIn } from "next-auth/react";
 import AppBarComponent from "@/app/components/AppBarComponent";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {SubmitHandler, useForm} from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Button } from 'semantic-ui-react';
 /*
 https://www.youtube.com/watch?v=cc_xmawJ8Kg
 */
@@ -30,7 +31,7 @@ export function SignUpComponent() {
     });
 
     type formFields = z.infer<typeof schema>
-    const {register, handleSubmit, formState: {errors,isSubmitting}, setError} = useForm<formFields>({
+    const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<formFields>({
         resolver: zodResolver(schema), defaultValues: {
             firstname: firstname,
             lastname: lastname,
@@ -58,10 +59,10 @@ export function SignUpComponent() {
             })
         }
         if (json.error === "This email already exists") {
-            setError("email", {message: "This email already exists"})
+            setError("email", { message: "This email already exists" })
         }
         if (json.error === "This username already exists") {
-            setError("username", {message: "This username already exists"})
+            setError("username", { message: "This username already exists" })
         }
 
 
@@ -69,7 +70,7 @@ export function SignUpComponent() {
 
     return (
         <div className={'h-full flex flex-col'}>
-            <AppBarComponent/>
+            <AppBarComponent />
             <div
                 className={'flex justify-center flex-col items-center h-full bg-gray-50 dark:bg-gray-900 border-t-blue-500'}>
                 <form onSubmit={handleSubmit(onSubmit)} className={'flex flex-col bg-white border p-10 shadow'}>
@@ -79,20 +80,20 @@ export function SignUpComponent() {
                             <label htmlFor="firstname" className="block mb-2 text-sm font-medium text-gray-900">First
                                 name</label>
                             <input type={"text"}
-                                   value={firstname}
-                                   id={'firstname'}
-                                   className={'p-4 rounded border'}
-                                   {...register('firstname')}
-                                   placeholder={'John'} onChange={(e) => setFirstName(e.target.value)}/>
-                            {errors.firstname && <p className={'text-red-500'}>{errors.firstname.message}</p>}
+                                value={firstname}
+                                id={'firstname'}
+                                className={'p-4 rounded border'}
+                                {...register('firstname')}
+                                placeholder={'John'} onChange={(e) => setFirstName(e.target.value)} />
+                            {errors.firstname ? <p className={'text-red-500'}>{errors.firstname.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
                         </div>
                         <div className={'mb-2'}>
                             <label htmlFor="lastname" className="block mb-2 text-sm font-medium text-gray-900">
                                 Last name</label>
                             <input type={"text"} value={lastname} id={'lastname'} className={'p-4 rounded border'}
-                                   {...register('lastname')}
-                                   placeholder={'Doe'} onChange={(e) => setLastName(e.target.value)}/>
-                            {errors.lastname && <p className={'text-red-500'}>{errors.lastname.message}</p>}
+                                {...register('lastname')}
+                                placeholder={'Doe'} onChange={(e) => setLastName(e.target.value)} />
+                            {errors.lastname ? <p className={'text-red-500'}>{errors.lastname.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                         </div>
                     </div>
@@ -101,49 +102,49 @@ export function SignUpComponent() {
                         <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900">
                             Username</label>
                         <input type={"text"} value={username} id={'username'} className={'p-4 rounded border'}
-                               {...register('username')}
-                               placeholder={'Johny'} onChange={(e) => setUsername(e.target.value)}/>
-                        {errors.username && <p className={'text-red-500'}>{errors.username.message}</p>}
+                            {...register('username')}
+                            placeholder={'Johny'} onChange={(e) => setUsername(e.target.value)} />
+                        {errors.username ? <p className={'text-red-500'}>{errors.username.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     </div>
 
                     <div className={'mb-2 flex flex-col'}>
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
                         <input type={"email"} value={email} id={'email'} className={'p-4 rounded border'}
-                               placeholder={'Email'}
-                               {...register('email')}
-                               onChange={(e) => setEmail(e.target.value)}/>
-                        {errors.email && <p className={'text-red-500'}>{errors.email.message}</p>}
+                            placeholder={'Email'}
+                            {...register('email')}
+                            onChange={(e) => setEmail(e.target.value)} />
+                        {errors.email ? <p className={'text-red-500'}>{errors.email.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     </div>
                     <div className={'mb-2 flex flex-col'}>
                         <label htmlFor="password"
-                               className="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                            className="block mb-2 text-sm font-medium text-gray-900">Password</label>
                         <input id={'password'} value={password} className={'p-4 rounded border'}
-                               {...register('password')}
-                               placeholder={'Password'} type={'password'}
-                               onChange={(e) => setPassword(e.target.value)}/>
-                        {errors.password && <p className={'text-red-500'}>{errors.password.message}</p>}
+                            {...register('password')}
+                            placeholder={'Password'} type={'password'}
+                            onChange={(e) => setPassword(e.target.value)} />
+                        {errors.password ? <p className={'text-red-500'}>{errors.password.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     </div>
                     <div className={'mb-2 flex flex-col'}>
                         <label htmlFor="password_check"
-                               className="block mb-2 text-sm font-medium text-gray-900">Password check</label>
+                            className="block mb-2 text-sm font-medium text-gray-900">Password check</label>
                         <input id={'password_check'}
-                               value={passwordCheck}
-                               className={'p-4 rounded border'}
-                               {...register('password_check')}
-                               placeholder={'Password'} type={'password'}
-                               onChange={(e) => setPasswordCheck(e.target.value)}/>
-                        {errors.password_check && <p className={'text-red-500'}>{errors.password_check.message}</p>}
+                            value={passwordCheck}
+                            className={'p-4 rounded border'}
+                            {...register('password_check')}
+                            placeholder={'Password'} type={'password'}
+                            onChange={(e) => setPasswordCheck(e.target.value)} />
+                        {errors.password_check ? <p className={'text-red-500'}>{errors.password_check.message}</p> : <p className={"text-red-500 invisible"}>error</p>}
 
                     </div>
-                    <button disabled={isSubmitting} className={'mb-10 bg-blue-500 shadow p-3 rounded text-white'} type={"submit"}>{isSubmitting?'loading' : 'Sign up'}
-                    </button>
+                    <Button color='black' loading={isSubmitting} disabled={isSubmitting} type={"submit"}>{isSubmitting ? 'loading' : 'Sign up'}
+                    </Button>
                     <p className="text-sm font-light text-gray-500 ">
                         Your already have an account? <a href="/signin"
-                                                         className="font-medium text-primary-600 hover:underline">Sign
-                        in</a>
+                            className="font-medium text-primary-600 hover:underline">Sign
+                            in</a>
                     </p>
                 </form>
             </div>

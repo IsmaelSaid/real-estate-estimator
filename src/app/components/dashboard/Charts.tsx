@@ -238,9 +238,9 @@ export function Charts({ data }: { data: Mutation[] }) {
   };
 
   return (
-    <div className={"shadow"}>
+    <div className={""}>
       <div>
-        <h3 className="text-3xl font-bold dark:text-white pb-10">Charts</h3>
+        <h3 className="text-3xl font-bold dark:text-white pb-10 pt-3">Charts</h3>
         <div className="grid grid-cols-2 gap-3 pb-5 h-full">
           <div className="p-5">
             <Boxplot dataset={boxplotData} option={boxplotOptions}></Boxplot>

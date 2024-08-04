@@ -11,8 +11,8 @@ import { usePathname } from 'next/navigation'
 
 export default function AppBarComponent({ isAppBarLocked = false }: { isAppBarLocked?: boolean }) {
   const { data: session, status } = useSession();
-  const pathname = usePathname();
 
+  const pathname = usePathname();
   React.useEffect((
 
 

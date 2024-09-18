@@ -4,6 +4,8 @@ import AppBarComponent from "@/app/components/AppBarComponent.tsx";
 import { Button } from "semantic-ui-react";
 import Image from "next/image";
 import background from "../../public/bg.png";
+import { motion } from "framer-motion";
+
 
 export default function Home() {
   return (
@@ -15,7 +17,10 @@ export default function Home() {
       quality={100}
       style={{ zIndex: -1 }} /><main className="h-full">
         <AppBarComponent />
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
           id="home"
           className="w-full h-full pt-20 mx-auto flex justify-center items-center"
           style={{ position: "relative" }}
@@ -29,7 +34,7 @@ export default function Home() {
             </p>
             <div className="flex justify-center">
               <Button
-                color="green"
+                color="black"
                 onClick={() => {
                   window.location.href = "/prediction";
                 }}
@@ -38,7 +43,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </main></>
   );
 }

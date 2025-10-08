@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+
+    }
+}
+
+body {
+    background-color: white;
+    height: 100vh;
+
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
